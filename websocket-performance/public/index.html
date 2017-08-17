@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>performance-test</title>
+        <meta charset="utf-8">
+        <script src="script/jquery-3.2.1.slim.min.js"></script>
+    </head>
+    <body>
+        <div>
+            <h1>websocket-performance-test</h1>
+            設定したサイズのファイルを送信します。
+            <div id="msg">
+            </div>
+            <label for="size">送信するファイルサイズ(未実装):</label> 
+            <input id="size" type="number" value="100">
+            <br>
+            <label for="times">施行する回数:</label> 
+            <input id="times" type="number" value="10">
+            <br>
+            <button id="submit">送信</button>
+            <hr>
+            <div id="score">
+                <p>最新の値(ms):<span id="new"></span></p>
+                <p>終了した回数:<span id="endtime"></span></p>
+                <p>平均値(ms):<span id="avg"></span></p>
+            </div>
+        </div>
+        <script src="script/main.js"></script>
+    </body>
+</html>
