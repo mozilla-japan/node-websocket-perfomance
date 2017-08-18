@@ -3,7 +3,7 @@ const wsClient = new WebSocket(`ws://${location.host}`);
 var newTest = "";
 
 $("#submit").on("click", () => {
-    newTest = new Test(wsClient, $("#size").val(), $("#times").val());
+    newTest = new Test(wsClient, $("#size").val(), $("#times").val(),$("#color").val());
 
 });
 
@@ -24,14 +24,8 @@ function writeMsg(text, type) {
     }
 }
 
-/**
- * 
- * @param {WebSocket} [client] -  websocketインスタンス
- * @param {Number} [size] -  ペイロードのサイズ(KB)
- * @param {Number} [times] - 回数
- */
 class Test {
-    constructor(client, size, times) {
+    constructor(client, size, times,color) {
         this.client = client;
         this.size = size ? size : 1;
         this.times = times ? times : 10;
@@ -42,7 +36,8 @@ class Test {
             time:"",//何回目か
             data: ""//何かしらここにデータが入るでしょう。
         }
-        this.color = "";
+        this.color = color;
+        
         if (this.size > 10 * 1024 * 1024) {
             writeMsg("サイズが大きすぎます", "danger");
             throw "Over max size";
@@ -70,7 +65,6 @@ class Test {
 
         //performance.measure用IDを生成。
         this.id = Date.now();
-        this.color = $("#color").val();
         //forループにすると帰って来る前に打ってしまうので、catchMessageから再帰的に呼ぶ。
         this.shot(this.id,this.color);
         writeMsg("テスト中", "info");
@@ -87,7 +81,9 @@ class Test {
      * @param {Number} [thisTime] - この時の試行回数
      */
     shot(id,data) {
-        //
+        if (data == "random"){
+            data = Math.random() > 0.5 ? "orange" :"green";
+        }
         this.payload["id"] = this.id;
         this.payload["time"] = this.count; //何回目か
         this.payload["data"] = data; //入るデータ
