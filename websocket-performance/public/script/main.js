@@ -38,9 +38,11 @@ class Test {
         this.id = Date.now();
         this.count = 0;
         this.payload = {
-            time: "",
-            data: ""
+            id:"",//このテストのID
+            time:"",//何回目か
+            data: ""//何かしらここにデータが入るでしょう。
         }
+        this.color = "";
         if (this.size > 10 * 1024 * 1024) {
             writeMsg("サイズが大きすぎます", "danger");
             throw "Over max size";
@@ -53,7 +55,7 @@ class Test {
         //今回の実装ではとりあえず文字を送る。
 
         this.client.onmessage = (message) => {
-            this.catchMessage(message);
+            this.catchMessage(message.data);
         }
         this.start();
     }
@@ -68,10 +70,9 @@ class Test {
 
         //performance.measure用IDを生成。
         this.id = Date.now();
-
-
+        this.color = $("#color").val();
         //forループにすると帰って来る前に打ってしまうので、catchMessageから再帰的に呼ぶ。
-        this.shot(this.count);
+        this.shot(this.id,this.color);
         writeMsg("テスト中", "info");
 
         //終了したら平均値を書き出す。
@@ -85,24 +86,31 @@ class Test {
      * 
      * @param {Number} [thisTime] - この時の試行回数
      */
-    shot(thisTime) {
-        //this.payload[0] = thisTime;
-        //とりあえずこの実装ではこの回数のデータを
-        this.payload = thisTime;
-        performance.mark(`s:${thisTime}`);
-        this.client.send(this.payload);
+    shot(id,data) {
+        //
+        this.payload["id"] = this.id;
+        this.payload["time"] = this.count; //何回目か
+        this.payload["data"] = data; //入るデータ
+        let JSONPayload = JSON.stringify(this.payload)
+        //performance.mark(`s:${this.payload.time}`);
+        performance.mark(`s:${JSONPayload}`);
+        this.client.send(JSONPayload);
 
         //lampを書き換える。
         $("#lamp").css("background-color", "Red");
     }
 
-    catchMessage(payload) {
+    catchMessage(JSONPayload) {
         //このメッセージが何番目かチェックする.
-        let catchTime = payload.data;
+        //let catchTime = value.time;
         //console.log("CATCH:" + catchTime)
+        //console.log(`e:${JSONPayload}`)
+        performance.mark(`e:${JSONPayload}`);
+        let value = JSON.parse(JSONPayload);
+        //JSONの構文解析の時間が乗ってしまう...
 
-        performance.mark(`e:${catchTime}`);
-        performance.measure(this.id, `s:${catchTime}`, `e:${catchTime}`);
+        //performance.mark(`e:${value.time}`);
+        performance.measure(value.id, `s:${JSONPayload}`, `e:${JSONPayload}`);
 
 
         if (this.count < this.times) {
@@ -111,7 +119,7 @@ class Test {
             //lampを書き換える。
             $("#lamp").css("background-color", "Blue");
             this.count++;
-            this.shot(this.count);
+            this.shot(this.id,this.color);
             $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration);
             $("#endtime").html(this.count);
             

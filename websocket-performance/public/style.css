@@ -3,8 +3,8 @@ body{
 }
 #lamp{
     float:right;
-    height: 300px;
-    width: 300px;
+    height: 200px;
+    width: 200px;
    
     border: medium solid gray;
 }

@@ -14,8 +14,9 @@ const {
 
 // settings
 const PORT = 8080;
-const GPIO = 29;
-const MODE = "OUT";
+const GREEN_GPIO = 29;
+const ORANGE_GPIO = 25;
+const MODE = "out";
 // initialize
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +24,7 @@ const wss = new WebSocket.Server({
 	server: server
 });
 var pinValue = 0;
-writeGPIO(pinValue);
+writeGPIO(pinValue,GREEN_GPIO);
 // 0を書き込む
 
 
@@ -38,26 +39,35 @@ wss.on("connection", (client) => {
 })
 
 function onMessageFunction(message) {
-	//console.log(message);
-	//メッサージが来た時に実行する関数。pong以外を書く。
-	//console.log(message);
-	pinValue = pinValue ? 0:1;
-	writeGPIO(pinValue);
+	/**
+	 * message = {
+	 * 	id:
+	 * }
+	 */
+	//console.log(message)
+	let value = JSON.parse(message);
+	pinValue = pinValue ? 0 : 1;
+	if(value.data == "green"){
+		writeGPIO(pinValue,GREEN_GPIO);
+	}else{
+		writeGPIO(pinValue,ORANGE_GPIO);
+	}
 	
+	
+
 }
 
 /**
  * 
  * @param {Number} 0 or 1
  */
-function writeGPIO(newValue) {
-
-	exec(`gpio write ${GPIO} ${newValue}`, (err, stdout, stderr) => {
+function writeGPIO(newValue,port) {
+	exec(`gpio write ${port} ${newValue}`, (err, stdout, stderr) => {
 		if (err) {
 			//throw `[GPIO]ERROR:${stderr}`
 		}
 		console.log(`[GPIO]: writing.
-			PIN:${GPIO}(wPI)
+			PIN:${port}(wPI)
 			VALUE:${newValue}
 		`);
 	});
