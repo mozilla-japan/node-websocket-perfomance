@@ -54,7 +54,7 @@ function onMessageFunction(message) {
 		writeGPIO(greenValue,GREEN_GPIO);
 	}else{
 		orangeValue = orangeValue ? 0 : 1;
-		writeGPIO(porangeValue,ORANGE_GPIO);
+		writeGPIO(orangeValue,ORANGE_GPIO);
 	}
 	
 	
