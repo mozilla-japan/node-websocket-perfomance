@@ -1,0 +1,10 @@
+body{
+    font-size:150%;
+}
+#lamp{
+    float:right;
+    height: 300px;
+    width: 300px;
+   
+    border: medium solid gray;
+}

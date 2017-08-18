@@ -36,10 +36,10 @@ class Test {
         this.size = size ? size : 1;
         this.times = times ? times : 10;
         this.id = Date.now();
-        this.count = 0; 
+        this.count = 0;
         this.payload = {
-            time:"",
-            data:""
+            time: "",
+            data: ""
         }
         if (this.size > 10 * 1024 * 1024) {
             writeMsg("サイズが大きすぎます", "danger");
@@ -52,7 +52,7 @@ class Test {
         //this.payload = new Uint32Array(size / 4);
         //今回の実装ではとりあえず文字を送る。
 
-        this.client.onmessage = (message)=>{
+        this.client.onmessage = (message) => {
             this.catchMessage(message);
         }
         this.start();
@@ -72,7 +72,7 @@ class Test {
 
         //forループにすると帰って来る前に打ってしまうので、catchMessageから再帰的に呼ぶ。
         this.shot(this.count);
-        writeMsg("テスト中","info");
+        writeMsg("テスト中", "info");
 
         //終了したら平均値を書き出す。
         /*
@@ -91,8 +91,11 @@ class Test {
         this.payload = thisTime;
         performance.mark(`s:${thisTime}`);
         this.client.send(this.payload);
+
+        //lampを書き換える。
+        $("#lamp").css("background-color", "Red");
     }
-    
+
     catchMessage(payload) {
         //このメッセージが何番目かチェックする.
         let catchTime = payload.data;
@@ -100,18 +103,23 @@ class Test {
 
         performance.mark(`e:${catchTime}`);
         performance.measure(this.id, `s:${catchTime}`, `e:${catchTime}`);
-        
-        if(this.count < this.times){
+
+
+        if (this.count < this.times) {
+            
             //まだ残カウントが残ってる場合
-            //console.log(this);
+            //lampを書き換える。
+            $("#lamp").css("background-color", "Blue");
             this.count++;
             this.shot(this.count);
             $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration);
             $("#endtime").html(this.count);
-        }else{
-            //console.log(this);
             
+        } else {
+            //console.log(this);
             this.success();
+            //lampを書き換える。
+            $("#lamp").css("background-color", "Green");
         }
 
 
@@ -119,17 +127,18 @@ class Test {
     success() {
         //この結果書き出し
         $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration);
-        
+
         $("#avg").html(avgDuration(performance.getEntriesByName(this.id)));
-        writeMsg("終了しました","success");
-        function avgDuration(array){
-            let sum =0;
-            for(let ele of array){
+        writeMsg("終了しました", "success");
+
+        function avgDuration(array) {
+            let sum = 0;
+            for (let ele of array) {
                 sum += ele.duration;
             }
-            return sum/array.length;
+            return sum / array.length;
         }
     }
-    
+
 
 }
