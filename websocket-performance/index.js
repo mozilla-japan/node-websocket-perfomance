@@ -25,7 +25,8 @@ const wss = new WebSocket.Server({
 });
 var greenValue = 0;
 var orangeValue = 0;
-writeGPIO(pinValue,GREEN_GPIO);
+writeGPIO(greenValue,GREEN_GPIO);
+writeGPIO(orangeValue,ORANGE_GPIO);
 // 0を書き込む
 
 
@@ -50,10 +51,10 @@ function onMessageFunction(message) {
 	
 	if(value.data == "green"){
 		greenValue = greenValue ? 0 : 1;
-		writeGPIO(pinValue,GREEN_GPIO);
+		writeGPIO(greenValue,GREEN_GPIO);
 	}else{
 		orangeValue = orangeValue ? 0 : 1;
-		writeGPIO(pinValue,ORANGE_GPIO);
+		writeGPIO(porangeValue,ORANGE_GPIO);
 	}
 	
 	
