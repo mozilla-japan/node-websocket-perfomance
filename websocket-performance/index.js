@@ -52,7 +52,7 @@ function onMessageFunction(message) {
  */
 function writeGPIO(newValue) {
 
-	exec(`gpio ${MODE} ${GPIO} ${newValue}`, (err, stdout, stderr) => {
+	exec(`gpio write ${GPIO} ${newValue}`, (err, stdout, stderr) => {
 		if (err) {
 			//throw `[GPIO]ERROR:${stderr}`
 		}
