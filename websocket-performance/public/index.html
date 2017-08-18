@@ -4,6 +4,8 @@
         <title>performance-test</title>
         <meta charset="utf-8">
         <script src="script/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
@@ -35,6 +37,10 @@
                 <p>終了した回数:<span id="endtime"></span></p>
                 <p>平均値(ms):<span id="avg"></span></p>
             </div>
+            <textarea id="csv">
+            </textarea>
+            <canvas id="ctx">
+            </canvas>
         </div>
         <script src="script/main.js"></script>
     </body>
