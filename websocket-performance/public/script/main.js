@@ -3,7 +3,7 @@ const wsClient = new WebSocket(`ws://${location.host}`);
 var newTest = "";
 
 $("#submit").on("click", () => {
-    newTest = new Test(wsClient,$("#size").val(),$("#times").val());
+    newTest = new Test(wsClient, $("#size").val(), $("#times").val());
 
 });
 
@@ -36,6 +36,11 @@ class Test {
         this.size = size ? size : 1;
         this.times = times ? times : 10;
         this.id = Date.now();
+        this.count = 0; 
+        this.payload = {
+            time:"",
+            data:""
+        }
         if (this.size > 10 * 1024 * 1024) {
             writeMsg("サイズが大きすぎます", "danger");
             throw "Over max size";
@@ -47,43 +52,84 @@ class Test {
         //this.payload = new Uint32Array(size / 4);
         //今回の実装ではとりあえず文字を送る。
 
-        this.client.onmessage = this.catchMessage;
+        this.client.onmessage = (message)=>{
+            this.catchMessage(message);
+        }
         this.start();
     }
     start() {
+        /*
         for (let i=0;i<this.times;i++){
-            this.shotTime(i);
+            this.shot(i);
         }
+        */
+        //カウンターを初期化
+        this.count = 0;
+
+        //performance.measure用IDを生成。
+        this.id = Date.now();
+
+
+        //forループにすると帰って来る前に打ってしまうので、catchMessageから再帰的に呼ぶ。
+        this.shot(this.count);
+        writeMsg("テスト中","info");
 
         //終了したら平均値を書き出す。
+        /*
         $("#avg").html();
         writeMsg("終了しました","success");
-
+        */
     }
 
     /**
      * 
      * @param {Number} [thisTime] - この時の試行回数
      */
-    shotTime(thisTime) {
+    shot(thisTime) {
         //this.payload[0] = thisTime;
         //とりあえずこの実装ではこの回数のデータを
         this.payload = thisTime;
-        let a = performance.mark(`s:${thisTime}`);
+        performance.mark(`s:${thisTime}`);
         this.client.send(this.payload);
     }
+    
     catchMessage(payload) {
         //このメッセージが何番目かチェックする.
         let catchTime = payload.data;
-        console.log("CATCH:" + catchTime)
-        
+        //console.log("CATCH:" + catchTime)
+
         performance.mark(`e:${catchTime}`);
-        performance.measure(catchTime,`s:${catchTime}`,`e:${catchTime}`);
+        performance.measure(this.id, `s:${catchTime}`, `e:${catchTime}`);
         
-        //この結果書き出し
-        $("#new").html(performance.getEntriesByName(catchTime)[performance.getEntriesByName(catchTime).length-1].duration);
-        $("#times").html(catchTime);
-        
+        if(this.count < this.times){
+            //まだ残カウントが残ってる場合
+            //console.log(this);
+            this.count++;
+            this.shot(this.count);
+            $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration);
+            $("#endtime").html(this.count);
+        }else{
+            //console.log(this);
+            
+            this.success();
+        }
+
+
     }
+    success() {
+        //この結果書き出し
+        $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration);
+        
+        $("#avg").html(avgDuration(performance.getEntriesByName(this.id)));
+        writeMsg("終了しました","success");
+        function avgDuration(array){
+            let sum =0;
+            for(let ele of array){
+                sum += ele.duration;
+            }
+            return sum/array.length;
+        }
+    }
+    
 
 }
