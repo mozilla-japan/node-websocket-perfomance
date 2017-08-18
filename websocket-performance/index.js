@@ -23,7 +23,7 @@ const wss = new WebSocket.Server({
 	server: server
 });
 var pinValue = 0;
-writeGPIO(false);
+writeGPIO(pinValue);
 // 0を書き込む
 
 
