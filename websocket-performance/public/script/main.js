@@ -64,7 +64,7 @@ class Test {
         }
         */
         //カウンターを初期化
-        this.count = 0;
+        this.count = 1;
 
         //performance.measure用IDを生成。
         this.id = Date.now();
