@@ -70,10 +70,12 @@ function writeGPIO(newValue,port) {
 		if (err) {
 			//throw `[GPIO]ERROR:${stderr}`
 		}
+		/*
 		console.log(`[GPIO]: writing.
 			PIN:${port}(wPI)
 			VALUE:${newValue}
 		`);
+		*/
 	});
 }
 // 静的ファイルの提供
