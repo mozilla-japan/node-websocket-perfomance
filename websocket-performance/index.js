@@ -23,7 +23,8 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({
 	server: server
 });
-var pinValue = 0;
+var greenValue = 0;
+var orangeValue = 0;
 writeGPIO(pinValue,GREEN_GPIO);
 // 0を書き込む
 
@@ -46,10 +47,12 @@ function onMessageFunction(message) {
 	 */
 	//console.log(message)
 	let value = JSON.parse(message);
-	pinValue = pinValue ? 0 : 1;
+	
 	if(value.data == "green"){
+		greenValue = greenValue ? 0 : 1;
 		writeGPIO(pinValue,GREEN_GPIO);
 	}else{
+		orangeValue = orangeValue ? 0 : 1;
 		writeGPIO(pinValue,ORANGE_GPIO);
 	}
 	
