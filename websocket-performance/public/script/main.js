@@ -118,6 +118,8 @@ class Test {
         } else {
             //console.log(this);
             this.success();
+            //終了した回数を書き換える。
+            $("#endtime").html(this.count);
             //lampを書き換える。
             $("#lamp").css("background-color", "Green");
         }
