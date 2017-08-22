@@ -139,7 +139,8 @@ class Test {
         document.getElementById("new").innerHTML = durations[durations.length - 1];
         //平均値を出す。
         document.getElementById("avg").innerHTML = returnAvg(durations, this.DECIMAL);
-
+        //最大値を出す。
+        document.getElementById("max").innerHTML = Math.max.apply(null,durations);
         writeMsg("終了しました。結果を書き出しました。", "success");
         document.getElementById("csv").value = exportCSV(durations);
         renderChart(durations, document.getElementById("ctx"));
