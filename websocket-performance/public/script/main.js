@@ -2,26 +2,30 @@
 const wsClient = new WebSocket(`ws://${location.host}`);
 var newTest = "";
 
-$("#submit").on("click", () => {
-    //newTest = new Test(wsClient, $("#size").val(), $("#times").val(), $("#color").val());
-    newTest = new Test(wsClient, 0, $("#times").val(), $("#color").val());
+document.getElementById("submit").addEventListener("click", submit);
 
-});
+function submit() {
+    let times = document.getElementById("times").value;
+    let color = document.getElementById("color").value;
+    let size = 0; //追加するファイルサイズなど
+    newTest = new Test(wsClient, 0, times, color);
+}
 
 function writeMsg(text, type) {
-    $("#msg").html(text);
+    let msgDOM = document.getElementById("msg");
+    msgDOM.innerHTML = text;
     switch (type) {
         case "danger":
-            $("#msg").css("color", "Red");
+            msgDOM.style.color = "red";
             break;
         case "success":
-            $("#msg").css("color", "Green");
+            msgDOM.style.color = "green";
             break;
         case "info":
-            $("#msg").css("color", "Blue");
+            msgDOM.style.color = "info";
             break;
         default:
-            $("#msg").css("color", "Gray");
+            msgDOM.style.color = "gray";
     }
 }
 
@@ -75,12 +79,11 @@ class Test {
         this.payload["time"] = this.count; //何回目か
         this.payload["data"] = data; //入るデータ
         let JSONPayload = JSON.stringify(this.payload)
+        //lampを書き換える。
+        document.getElementById("lamp").style.backgroundColor = "red";
         //JSONが大きくなる時は実装を変える必要アリ
         performance.mark(`s:${JSONPayload}`);
         this.client.send(JSONPayload);
-
-        //lampを書き換える。
-        $("#lamp").css("background-color", "Red");
     }
 
     catchMessage(JSONPayload) {
@@ -94,19 +97,21 @@ class Test {
         if (this.count < this.times) {
             //まだ残カウントが残ってる場合
             //lampを書き換える。
-            $("#lamp").css("background-color", "Blue");
+            document.getElementById("lamp").style.backgroundColor = "blue";
             this.count++;
-            this.shot(this.id, this.color);
             //最新の値を書き換える。
-            $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration.toFixed(this.DECIMAL));
-            $("#endtime").html(this.count);
+            document.getElementById("new").innerHTML = performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration.toFixed(this.DECIMAL);
+            document.getElementById("endtime").innerHTML = this.count;
+
+            this.shot(this.id, this.color);
 
         } else {
             this.success();
             //終了した回数を書き換える。
-            $("#endtime").html(this.count);
+            document.getElementById("endtime").innerHTML = this.count;
+
             //lampを書き換える。
-            $("#lamp").css("background-color", "Green");
+            document.getElementById("lamp").style.backgroundColor = "green";
         }
 
 
@@ -114,26 +119,27 @@ class Test {
     success() {
         //この結果書き出し
         let result = performance.getEntriesByName(this.id);
-        let durations = floorDuraions(result,this.DECIMAL);
+        let durations = floorDuraions(result, this.DECIMAL);
         //最後の値を更新する
-        $("#new").html(durations[durations.length -1 ]);
+        document.getElementById("new").innerHTML = durations[durations.length - 1];
         //平均値を出す。
-        $("#avg").html(returnAvg(durations,this.DECIMAL));
+        document.getElementById("avg").innerHTML = returnAvg(durations, this.DECIMAL);
 
         writeMsg("終了しました。結果をCSVに書き出しました。", "success");
-        $("#csv").val(exportCSV(durations));
+        document.getElementById("csv").value = exportCSV(durations);
         renderChart(durations, document.getElementById("ctx"))
 
-        function floorDuraions(array,DECIMAL){
+        function floorDuraions(array, DECIMAL) {
             //ここでしdurationの配列を作る。
             //小数点第何位までかここで決定する
             let fixedDurations = [];
-            for (let ele of array){
+            for (let ele of array) {
                 fixedDurations.push(Number(ele.duration.toFixed(DECIMAL)));
             }
             return fixedDurations;
         }
-        function returnAvg(array,DECIMAL) {
+
+        function returnAvg(array, DECIMAL) {
             let sum = 0;
             for (let ele of array) {
                 sum += ele;
@@ -154,7 +160,7 @@ class Test {
             let data = array;
             let labels = [];
             //ラベルを生成
-            for (let i in data){
+            for (let i in data) {
                 labels.push(i)
             }
             var myLineChart = new Chart(ctx, {
