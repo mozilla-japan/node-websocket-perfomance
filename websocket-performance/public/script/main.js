@@ -8,7 +8,12 @@ function submit() {
     let times = document.getElementById("times").value;
     let color = document.getElementById("color").value;
     let size = 0; //追加するファイルサイズなど
+    //performanceのリソースを削除
+    performance.clearResourceTimings();
+    //performanceのバッファーを調整
+    performance.setResourceTimingBufferSize(times*4);
     newTest = new Test(wsClient, 0, times, color);
+    newTest.start();
 }
 
 function writeMsg(text, type) {
@@ -58,7 +63,7 @@ class Test {
         this.client.onmessage = (message) => {
             this.catchMessage(message.data);
         }
-        this.start();
+        
     }
     start() {
         //カウンターを初期化
@@ -100,6 +105,8 @@ class Test {
             document.getElementById("lamp").style.backgroundColor = "blue";
             this.count++;
             //最新の値を書き換える。
+            
+            //console.log(performance.getEntriesByName(this.id));
             document.getElementById("new").innerHTML = performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration.toFixed(this.DECIMAL);
             document.getElementById("endtime").innerHTML = this.count;
 
@@ -127,7 +134,9 @@ class Test {
 
         writeMsg("終了しました。結果をCSVに書き出しました。", "success");
         document.getElementById("csv").value = exportCSV(durations);
-        renderChart(durations, document.getElementById("ctx"))
+        renderChart(durations, document.getElementById("ctx"));
+        
+
 
         function floorDuraions(array, DECIMAL) {
             //ここでしdurationの配列を作る。
