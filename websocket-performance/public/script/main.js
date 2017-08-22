@@ -68,12 +68,6 @@ class Test {
         //forループにすると帰って来る前に打ってしまうので、catchMessageから再帰的に呼ぶ。
         this.shot(this.id, this.color);
         writeMsg("テスト中", "info");
-
-        //終了したら平均値を書き出す。
-        /*
-        $("#avg").html();
-        writeMsg("終了しました","success");
-        */
     }
 
     /**
@@ -193,7 +187,7 @@ class Test {
                     //データセット
                     datasets: [{
                         //凡例
-                        label: "掛かったミリ秒数",
+                        label: "掛かった時間(ms)",
                         //背景色
                         backgroundColor: "rgba(75,192,192,0.4)",
                         //枠線の色
@@ -202,6 +196,8 @@ class Test {
                         data: data,
                         //ラインを表示するか否か
                         showLine: false, // disable for a single dataset
+                        //滑らかに表示する
+                        cubicInterpolationMode:`monotone`
                     }]
                 },
                 //オプションの設定
@@ -211,7 +207,8 @@ class Test {
                         yAxes: [{
                             ticks: {
                                 //最小値を0にする
-                                beginAtZero: false
+                                beginAtZero: false,
+                                max:100,
                             }
                         }]
                     }
