@@ -133,7 +133,7 @@ class Test {
         //平均値を出す。
         document.getElementById("avg").innerHTML = returnAvg(durations, this.DECIMAL);
 
-        writeMsg("終了しました。結果をCSVに書き出しました。", "success");
+        writeMsg("終了しました。結果を書き出しました。", "success");
         document.getElementById("csv").value = exportCSV(durations);
         renderChart(durations, document.getElementById("ctx"));
 
