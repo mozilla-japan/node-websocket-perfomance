@@ -134,7 +134,7 @@ class Test {
     success() {
         //この結果書き出し
         const result = performance.getEntriesByName(this.id);
-        const durations = floorDuraions(result, this.DECIMAL);
+        const durations = result.map(ele=>Number(ele.duration.toFixed(this.DECIMAL)));
         //最後の値を更新する
         document.getElementById("new").innerHTML = durations[durations.length - 1];
         //平均値を出す。
@@ -158,6 +158,7 @@ class Test {
             }
             return fixedDurations;
         }
+        
 
         function returnAvg(array, DECIMAL) {
             let sum = 0;
@@ -196,9 +197,7 @@ class Test {
                 labels.push(i)
             }
             const myLineChart = new Chart(ctx, {
-                //グラフの種類
                 type: 'line',
-                //データの設定
                 data: {
                     //データ項目のラベル
                     labels: labels,
@@ -206,25 +205,19 @@ class Test {
                     datasets: [{
                         //凡例
                         label: "掛かった時間(ms)",
-                        //背景色
                         backgroundColor: "rgba(75,192,192,0.4)",
-                        //枠線の色
                         borderColor: "rgba(75,192,192,1)",
                         //グラフのデータ
                         data: data,
-                        //ラインを表示するか否か
-                        showLine: false, // disable for a single dataset
+                        showLine: false, 
                         //滑らかに表示する
                         cubicInterpolationMode: `monotone`
                     }]
                 },
-                //オプションの設定
                 options: {
                     scales: {
-                        //縦軸の設定
                         yAxes: [{
                             ticks: {
-                                //最大値を100にする
                                 beginAtZero: false,
                                 max: 100,
                             }
