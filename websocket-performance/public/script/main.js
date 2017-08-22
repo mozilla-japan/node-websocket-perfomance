@@ -141,6 +141,8 @@ class Test {
         document.getElementById("avg").innerHTML = returnAvg(durations, this.DECIMAL);
         //最大値を出す。
         document.getElementById("max").innerHTML = Math.max.apply(null,durations);
+        //中央値を出す。
+        document.getElementById("med").innerHTML = returnMed(durations, this.DECIMAL);
         writeMsg("終了しました。結果を書き出しました。", "success");
         document.getElementById("csv").value = exportCSV(durations);
         renderChart(durations, document.getElementById("ctx"));
@@ -163,6 +165,18 @@ class Test {
                 sum += ele;
             }
             return (sum / array.length).toFixed(DECIMAL);
+        }
+        function returnMed(array,DECIMAL){
+            //中央値を求める。ディープコピーする
+            let sortedArray = array.concat().sort();
+            let length = sortedArray.length;
+            if(length%2 == 0){
+                //要素数偶数の場合
+                let mediun = (sortedArray[length/2] + sortedArray[length/2 + 1])/2;
+                return mediun.toFixed(DECIMAL);
+            }else{
+                return sortedArray[Math.round(length/2)].toFixed(DECIMAL);
+            }
         }
 
         function exportCSV(array) {
