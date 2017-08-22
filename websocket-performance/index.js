@@ -29,21 +29,22 @@ writeGPIO(orangeValue, ORANGE_GPIO);
 // wss
 wss.on("connection", (client) => {
 	console.log(`[${new Date().toISOString()}]接続されました。`);
-	client.on("message", (message) => {
-		onMessageFunction(message);
-		client.send(message);
+	a = client.on("message", (message) => {
+		let onMessagePromise = new Promise((resolve, reject) => {
+			resolve(message);
+		}).then((message) => {
+			onMessageFunction(message);
+			return message;
+		}).then((message) => {
+			client.send(message);
+		}).catch((e) => {
+			console.err(`[${new Date().toISOString()}]${e}`)
+		});
 	});
 })
 
 function onMessageFunction(message) {
-	/**
-	 * message = {
-	 * 	id:
-	 * }
-	 */
-	//console.log(message)
 	let value = JSON.parse(message);
-
 	switch (value.data) {
 		case "green":
 			greenValue = greenValue ? 0 : 1;
@@ -62,7 +63,8 @@ function onMessageFunction(message) {
 
 /**
  * 
- * @param {Number} 0 or 1
+ * @param {Number} newValue - 0 or 書き込む値
+ * @param {Number} port - GPIOピンの場所
  */
 function writeGPIO(newValue, port) {
 	exec(`gpio write ${port} ${newValue}`, (err, stdout, stderr) => {
