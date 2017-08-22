@@ -1,13 +1,13 @@
 //Websocketのconnectionを張る
 const wsClient = new WebSocket(`ws://${location.host}`);
-var newTest = "";
+let newTest = "";
 
 document.getElementById("submit").addEventListener("click", submit);
 
 function submit() {
-    let times = document.getElementById("times").value;
-    let color = document.getElementById("color").value;
-    let size = 0; //追加するファイルサイズなど
+    const times = document.getElementById("times").value;
+    const color = document.getElementById("color").value;
+    const size = 0; //追加するファイルサイズなど
     //performanceのリソース内にある過去の履歴を削除
     performance.clearMeasures();
     performance.clearMarks();
@@ -18,7 +18,7 @@ function submit() {
 }
 
 function writeMsg(text, type) {
-    let msgDOM = document.getElementById("msg");
+    const msgDOM = document.getElementById("msg");
     msgDOM.innerHTML = text;
     switch (type) {
         case "danger":
@@ -84,7 +84,7 @@ class Test {
         this.payload["id"] = this.id;
         this.payload["time"] = this.count; //何回目か
         this.payload["data"] = data; //入るデータ
-        let JSONPayload = JSON.stringify(this.payload)
+        const JSONPayload = JSON.stringify(this.payload)
         //lampを書き換える。
         document.getElementById("lamp").style.backgroundColor = "red";
         //JSONが大きくなる時は実装を変える必要アリ
@@ -94,7 +94,7 @@ class Test {
 
     catchMessage(JSONPayload) {
         performance.mark(`e:${JSONPayload}`);
-        let value = JSON.parse(JSONPayload);
+        const value = JSON.parse(JSONPayload);
         //JSONの構文解析の時間が乗ってしまう...
         //performance.mark(`e:${value.time}`);
         performance.measure(value.id, `s:${JSONPayload}`, `e:${JSONPayload}`);
@@ -126,8 +126,8 @@ class Test {
     }
     success() {
         //この結果書き出し
-        let result = performance.getEntriesByName(this.id);
-        let durations = floorDuraions(result, this.DECIMAL);
+        const result = performance.getEntriesByName(this.id);
+        const durations = floorDuraions(result, this.DECIMAL);
         //最後の値を更新する
         document.getElementById("new").innerHTML = durations[durations.length - 1];
         //平均値を出す。
@@ -142,7 +142,7 @@ class Test {
         function floorDuraions(array, DECIMAL) {
             //ここでしdurationの配列を作る。
             //小数点第何位までかここで決定する
-            let fixedDurations = [];
+            const fixedDurations = [];
             for (let ele of array) {
                 fixedDurations.push(Number(ele.duration.toFixed(DECIMAL)));
             }
@@ -167,13 +167,13 @@ class Test {
         }
 
         function renderChart(array, ctx) {
-            let data = array;
-            let labels = [];
+            const data = array;
+            const labels = [];
             //ラベルを生成
             for (let i in data) {
                 labels.push(i)
             }
-            var myLineChart = new Chart(ctx, {
+            const myLineChart = new Chart(ctx, {
                 //グラフの種類
                 type: 'line',
                 //データの設定
