@@ -1,7 +1,7 @@
 # websocket-performance
 ## howtouse
 ```
-git clone https://github.com/mozilla-japan/node-websocket-perfomance
+git clone https://github.com/webdino/node-websocket-perfomance
 ```
 ```
 cd node-websocket-performance
