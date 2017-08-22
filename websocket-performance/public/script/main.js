@@ -1,5 +1,12 @@
 //Websocketのconnectionを張る
 const wsClient = new WebSocket(`ws://${location.host}`);
+wsClient.onclose = ()=>{
+    writeMsg("接続が切れました","danger")
+}
+wsClient.onopen = ()=>{
+    writeMsg("接続しています。テストを開始できます。","success")
+}
+
 let newTest = "";
 
 document.getElementById("submit").addEventListener("click", submit);
@@ -28,7 +35,7 @@ function writeMsg(text, type) {
             msgDOM.style.color = "green";
             break;
         case "info":
-            msgDOM.style.color = "info";
+            msgDOM.style.color = "blue";
             break;
         default:
             msgDOM.style.color = "gray";

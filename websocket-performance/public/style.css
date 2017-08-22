@@ -16,3 +16,6 @@ body{
     align-content:left; 
     
 }
+#msg{
+    color: green;
+}
