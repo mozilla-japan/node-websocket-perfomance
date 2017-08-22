@@ -34,11 +34,9 @@ wss.on("connection", (client) => {
 			resolve(message);
 		}).then((message) => {
 			onMessageFunction(message);
-			console.log("onmessage func (1)")
 			return message;
 		}).then((message) => {
 			client.send(message);
-			console.log("client.send (2)")
 		}).catch((e) => {
 			console.err(`[${new Date().toISOString()}]${e}`)
 		});
