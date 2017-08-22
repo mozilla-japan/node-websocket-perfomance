@@ -3,7 +3,8 @@ const wsClient = new WebSocket(`ws://${location.host}`);
 var newTest = "";
 
 $("#submit").on("click", () => {
-    newTest = new Test(wsClient, $("#size").val(), $("#times").val(), $("#color").val());
+    //newTest = new Test(wsClient, $("#size").val(), $("#times").val(), $("#color").val());
+    newTest = new Test(wsClient, 0, $("#times").val(), $("#color").val());
 
 });
 
@@ -37,7 +38,9 @@ class Test {
             data: "" //何かしらここにデータが入るでしょう。
         }
         this.color = color;
-
+        //小数点第何位までの値にするか
+        this.DECIMAL = 3;
+        /*
         if (this.size > 10 * 1024 * 1024) {
             writeMsg("サイズが大きすぎます", "danger");
             throw "Over max size";
@@ -46,8 +49,7 @@ class Test {
             writeMsg("回数が多すぎます", "danger");
             throw "Over max times";
         }
-        //this.payload = new Uint32Array(size / 4);
-        //今回の実装ではとりあえず文字を送る。
+        */
 
         this.client.onmessage = (message) => {
             this.catchMessage(message.data);
@@ -55,11 +57,6 @@ class Test {
         this.start();
     }
     start() {
-        /*
-        for (let i=0;i<this.times;i++){
-            this.shot(i);
-        }
-        */
         //カウンターを初期化
         this.count = 1;
 
@@ -70,10 +67,6 @@ class Test {
         writeMsg("テスト中", "info");
     }
 
-    /**
-     * 
-     * @param {Number} [thisTime] - この時の試行回数
-     */
     shot(id, data) {
         if (data == "random") {
             data = Math.random() > 0.5 ? "orange" : "green";
@@ -82,7 +75,7 @@ class Test {
         this.payload["time"] = this.count; //何回目か
         this.payload["data"] = data; //入るデータ
         let JSONPayload = JSON.stringify(this.payload)
-        //performance.mark(`s:${this.payload.time}`);
+        //JSONが大きくなる時は実装を変える必要アリ
         performance.mark(`s:${JSONPayload}`);
         this.client.send(JSONPayload);
 
@@ -91,30 +84,24 @@ class Test {
     }
 
     catchMessage(JSONPayload) {
-        //このメッセージが何番目かチェックする.
-        //let catchTime = value.time;
-        //console.log("CATCH:" + catchTime)
-        //console.log(`e:${JSONPayload}`)
         performance.mark(`e:${JSONPayload}`);
         let value = JSON.parse(JSONPayload);
         //JSONの構文解析の時間が乗ってしまう...
-
         //performance.mark(`e:${value.time}`);
         performance.measure(value.id, `s:${JSONPayload}`, `e:${JSONPayload}`);
 
 
         if (this.count < this.times) {
-
             //まだ残カウントが残ってる場合
             //lampを書き換える。
             $("#lamp").css("background-color", "Blue");
             this.count++;
             this.shot(this.id, this.color);
-            $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration);
+            //最新の値を書き換える。
+            $("#new").html(performance.getEntriesByName(this.id)[performance.getEntriesByName(this.id).length - 1].duration.toFixed(this.DECIMAL));
             $("#endtime").html(this.count);
 
         } else {
-            //console.log(this);
             this.success();
             //終了した回数を書き換える。
             $("#endtime").html(this.count);
@@ -127,56 +114,49 @@ class Test {
     success() {
         //この結果書き出し
         let result = performance.getEntriesByName(this.id);
-        $("#new").html(result[result.length - 1].duration);
-
-        $("#new").html(result[result.length - 1].duration);
-        $("#avg").html(avgDuration(performance.getEntriesByName(this.id)));
+        let durations = floorDuraions(result,this.DECIMAL);
+        //最後の値を更新する
+        $("#new").html(durations[durations.length -1 ]);
+        //平均値を出す。
+        $("#avg").html(returnAvg(durations,this.DECIMAL));
 
         writeMsg("終了しました。結果をCSVに書き出しました。", "success");
-        $("#csv").val(exportCSV(result));
-        renderChart(result, document.getElementById("ctx"))
+        $("#csv").val(exportCSV(durations));
+        renderChart(durations, document.getElementById("ctx"))
 
-        function avgDuration(array) {
+        function floorDuraions(array,DECIMAL){
+            //ここでしdurationの配列を作る。
+            //小数点第何位までかここで決定する
+            let fixedDurations = [];
+            for (let ele of array){
+                fixedDurations.push(Number(ele.duration.toFixed(DECIMAL)));
+            }
+            return fixedDurations;
+        }
+        function returnAvg(array,DECIMAL) {
             let sum = 0;
             for (let ele of array) {
-                sum += ele.duration;
+                sum += ele;
             }
-            return sum / array.length;
+            return (sum / array.length).toFixed(DECIMAL);
         }
 
         function exportCSV(array) {
             let resultCSV = "";
             for (let ele of array) {
-                resultCSV += `${ele.duration},`;
+                resultCSV += `${ele},`;
             }
             return resultCSV.slice(0, -1)
 
         }
 
         function renderChart(array, ctx) {
-            let data = [];
-            let labels = []
-            /*
-            for (let i = 0; i < array.length; i++) {
-                let insertElement = {
-                    x: i,
-                    y: array[i].duration
-                }
-                data.push(insertElement);
-            }*/
-            for (let i in array) {
-                data.push(array[i].duration)
+            let data = array;
+            let labels = [];
+            //ラベルを生成
+            for (let i in data){
                 labels.push(i)
             }
-            console.log(data);
-
-            /*
-            let myLineChart = new Chart(ctx, {
-                type: 'line',
-                data: data,
-                options: {}
-            });
-            */
             var myLineChart = new Chart(ctx, {
                 //グラフの種類
                 type: 'line',
@@ -197,7 +177,7 @@ class Test {
                         //ラインを表示するか否か
                         showLine: false, // disable for a single dataset
                         //滑らかに表示する
-                        cubicInterpolationMode:`monotone`
+                        cubicInterpolationMode: `monotone`
                     }]
                 },
                 //オプションの設定
@@ -208,7 +188,7 @@ class Test {
                             ticks: {
                                 //最小値を0にする
                                 beginAtZero: false,
-                                max:100,
+                                max: 100,
                             }
                         }]
                     }
