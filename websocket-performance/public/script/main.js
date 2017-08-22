@@ -20,7 +20,7 @@ function submit() {
     performance.clearMarks();
     //performanceのバッファーを調整
     performance.setResourceTimingBufferSize(times * 4);
-    newTest = new Test(wsClient, 0, times, color);
+    newTest = new Test(wsClient, size, times, color);
     newTest.start();
 }
 
