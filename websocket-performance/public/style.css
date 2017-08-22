@@ -8,6 +8,11 @@ body{
    
     border: medium solid gray;
 }
-#csv{
+#csv_area{
     float: right;
+    
+}
+#csv{
+    align-content:left; 
+    
 }
