@@ -202,11 +202,15 @@ class Test {
                         //縦軸の設定
                         yAxes: [{
                             ticks: {
-                                //最小値を0にする
+                                //最大値を100にする
                                 beginAtZero: false,
                                 max: 100,
                             }
                         }]
+                    },
+                    title: {
+                        display: true,
+                        text: `${wsClient.url}への接続レスポンスタイム`
                     }
                 }
             });
