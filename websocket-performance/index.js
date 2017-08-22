@@ -1,8 +1,3 @@
-/*
- * node-websocket-perfomance
- * © WebDINO Japan
- */
-
 // modules
 const WebSocket = require("ws");
 const express = require("express");
