@@ -1,47 +1,50 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>performance-test</title>
-        <meta charset="utf-8">
-        <script src="script/jquery-3.2.1.slim.min.js"></script>
-        <script src="script/Chart.min.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="style.css">
-    </head>
-    <body>
-        <div>
-            <h1>websocket-performance-test</h1>
-            制御命令をJSONにして送信します。
-            <div id="lamp">
-                
-            </div>
-            <div id="msg">
-            </div>
-            
-            <label for="size">送信するファイルサイズ(未実装):</label> 
-            <input id="size" type="number" value="100">
-            <label for="color">LEDの色</label> 
-            <select id="color" name="example">
+<head>
+    <title>performance-test</title>
+    <meta charset="utf-8">
+    <script src="script/jquery-3.2.1.slim.min.js"></script>
+    <script src="script/Chart.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div>
+        <div id="msg">
+            開始できます
+        </div>
+        <div id="lamp">
+        </div>
+
+
+        <label for="size">送信するファイルサイズ(未実装):</label>
+        <input id="size" type="number" value="100">
+        <label for="color">LEDの色</label>
+        <select id="color" name="example">
+            <option value="none">点灯させない</option>
             <option value="green">green</option>
             <option value="orange">orange</option>
             <option value="random">random</option>
             </select>
-            <br>
-            <label for="times">施行する回数:</label> 
-            <input id="times" type="number" value="10">
-            <br>
-            <button id="submit">送信</button>
-            <hr>
-            <div id="score">
-                <p>最新の値(ms):<span id="new"></span></p>
-                <p>終了した回数:<span id="endtime"></span></p>
-                <p>平均値(ms):<span id="avg"></span></p>
-            </div>
-            <textarea id="csv">
-            </textarea>
-            <canvas id="ctx">
-            </canvas>
+        <br>
+        <label for="times">施行する回数:</label>
+        <input id="times" type="number" value="10">
+        <br>
+        <button id="submit">送信</button>
+        <hr>
+        <div id="score">
+            <p>最新の値(ms):<span id="new"></span></p>
+            <p>終了した回数:<span id="endtime"></span></p>
+            <p>平均値(ms):<span id="avg"></span></p>
         </div>
-        <script src="script/main.js"></script>
-    </body>
+        <textarea id="csv">
+            </textarea>
+        <canvas id="ctx">
+        </canvas>
+    </div>
+    <script src="script/main.js"></script>
+</body>
+
 </html>

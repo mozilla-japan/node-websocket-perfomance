@@ -25,15 +25,15 @@ const wss = new WebSocket.Server({
 });
 var greenValue = 0;
 var orangeValue = 0;
-writeGPIO(greenValue,GREEN_GPIO);
-writeGPIO(orangeValue,ORANGE_GPIO);
+writeGPIO(greenValue, GREEN_GPIO);
+writeGPIO(orangeValue, ORANGE_GPIO);
 // 0を書き込む
 
 
 
 // wss
 wss.on("connection", (client) => {
-	console.log("接続されました。");
+	console.log(`[${new Date().toISOString()}]接続されました。`);
 	client.on("message", (message) => {
 		onMessageFunction(message);
 		client.send(message);
@@ -48,24 +48,28 @@ function onMessageFunction(message) {
 	 */
 	//console.log(message)
 	let value = JSON.parse(message);
-	
-	if(value.data == "green"){
-		greenValue = greenValue ? 0 : 1;
-		writeGPIO(greenValue,GREEN_GPIO);
-	}else{
-		orangeValue = orangeValue ? 0 : 1;
-		writeGPIO(orangeValue,ORANGE_GPIO);
-	}
-	
-	
 
+	switch (value.data) {
+		case "green":
+			greenValue = greenValue ? 0 : 1;
+			writeGPIO(greenValue, GREEN_GPIO);
+			break;
+		case "orange":
+			orangeValue = orangeValue ? 0 : 1;
+			writeGPIO(orangeValue, ORANGE_GPIO);
+			break;
+		case "none":
+			break;
+		default:
+			break;
+	}
 }
 
 /**
  * 
  * @param {Number} 0 or 1
  */
-function writeGPIO(newValue,port) {
+function writeGPIO(newValue, port) {
 	exec(`gpio write ${port} ${newValue}`, (err, stdout, stderr) => {
 		if (err) {
 			//throw `[GPIO]ERROR:${stderr}`
